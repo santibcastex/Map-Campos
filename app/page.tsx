@@ -6,7 +6,6 @@ import Link from 'next/link'
 import LoginGate from '@/components/LoginGate'
 import type { Member } from '@/lib/supabase'
 
-// Leaflet no funciona en SSR
 const MapView = dynamic(() => import('@/components/MapView'), { ssr: false })
 
 export default function HomePage() {
@@ -23,7 +22,8 @@ export default function HomePage() {
     if (!authed) return
     fetch('/api/members')
       .then(r => r.json())
-      .then(data => { setMembers(data); setLoading(false) })
+      .then(data => { setMembers(Array.isArray(data) ? data : []); setLoading(false) })
+      .catch(() => setLoading(false))
   }, [authed])
 
   const filtered = useMemo(() => {
